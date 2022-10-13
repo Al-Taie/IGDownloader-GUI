@@ -1,15 +1,22 @@
-from typing import Optional, Text
+from dataclasses import dataclass
 
 from pymongo import MongoClient, errors as ex
 
 # Creating a pymongo client
-client = MongoClient('MONGODB_CLIENT')
+client = MongoClient('MONGO_CLIENT')
 
-db = client['apps_db']
-collection = db['apps']
+db = client['Apps']
+collection = db['app']
 
 
-def is_new_update(current_version, *args, **kwargs):
+@dataclass
+class Update:
+    url: str
+    version: str
+    description: str
+
+
+def is_new_update(current_version, *args, **kwargs) -> Update | bool:
     try:
         result = collection.find_one({'name': 'IG Downloader'})
     except ex.ConnectionFailure:
@@ -19,8 +26,5 @@ def is_new_update(current_version, *args, **kwargs):
         description = result.get('description')
         url = result.get('url')
         if version > current_version:
-            return url, description
-        else:
-            return False
-
-
+            return Update(url=url, version=version, description=description)
+        return False
