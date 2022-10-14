@@ -1,4 +1,5 @@
 import re
+import sys
 from os import startfile
 
 import requests
@@ -6,11 +7,11 @@ from PySide6.QtCore import Qt, QThreadPool
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QMenu, QSystemTrayIcon, QApplication, QMainWindow, QMessageBox
 
+from data.db import is_new_update
 from data.downloader import Downloader
 from ui.dialog.about_dialog import AboutDialog
 from ui.main.ui_main import Ui_Form
 from utils.configurations import app_name, PATH_IG_DOWNLOAD, headers, PATH_DOWNLOADS, version
-from data.db import is_new_update
 from utils.worker import Worker
 
 
@@ -91,6 +92,7 @@ class MainApp(QMainWindow, Ui_Form):
         self.btn_min.clicked.connect(self.hide)
         self.btn_exit.clicked.connect(self.close)
         self.btn_folder.clicked.connect(self.open_folder)
+        self.btn_cookie.clicked.connect(self.close)
         self.btn_info.clicked.connect(self.show_about)
         self.clipboard.dataChanged.connect(self.detect_url)
 
@@ -130,10 +132,6 @@ class MainApp(QMainWindow, Ui_Form):
             self.clipboard.clear()
             self.last_clipboard.append(text)
             worker = Worker(self.work, url=url)
-            # worker.signals.finished.connect(lambda: print(f'Finish'))
-            # worker.signals.result.connect()
-            # worker.signals.progress.connect(self.progress_fn)
-            # Execute
             self.threadpool.start(worker)
 
     def work(self, url):
@@ -142,11 +140,19 @@ class MainApp(QMainWindow, Ui_Form):
             self.handle_progress(total_size, current_size)
 
         try:
-            with requests.get(url, headers=headers) as res:
-                res_json = res.json()
+            with requests.get(url, headers=headers) as resp:
+                res_json = resp.json()
                 items = res_json.get('graphql').get('shortcode_media')
                 is_video = items.get('is_video')
                 is_slide = items.get('edge_sidecar_to_children')
+                caption: str = (
+                    items
+                    .get('edge_media_to_caption')
+                    .get('edges')[0]
+                    .get('node')
+                    .get('text')
+                ).split('\n')[0]
+
                 short_code = items["shortcode"]
                 username = items['owner']['username']
 
@@ -163,13 +169,15 @@ class MainApp(QMainWindow, Ui_Form):
                                                        short_code=short_code,
                                                        is_video=is_video,
                                                        current_post=current_post,
-                                                       on_progress=on_progress)
+                                                       on_progress=on_progress,
+                                                       caption=caption)
             else:
                 self.__downloader.download_prepare(items=items,
                                                    username=username,
                                                    short_code=short_code,
                                                    is_video=is_video,
-                                                   on_progress=on_progress)
+                                                   on_progress=on_progress,
+                                                   caption=caption)
         except Exception as e:
             print(e)
             self.lbl_status.setText('Error')
@@ -206,8 +214,6 @@ class MainApp(QMainWindow, Ui_Form):
             headers = {'Range': 'bytes=0-'}
             worker = Worker(self.__downloader.download, update.url, filename, headers)
             worker.signals.finished.connect(self.install_update)
-            # worker.signals.result.connect()
-            # Execute
             self.threadpool.start(worker)
             self.lbl_update.setVisible(True)
             self.lbl_status.setText('Updating')

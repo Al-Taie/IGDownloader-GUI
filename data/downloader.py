@@ -13,9 +13,13 @@ class Downloader:
         makedirs(post_path, exist_ok=True)
         return post_path
 
+    @staticmethod
+    def save_file(file_path, content):
+        with open(file_path, 'w+') as wf:
+            wf.write(content)
+
     def download_prepare(self, on_progress, *args, **kwargs):
-        (items, username, short_code, is_video, current_post) = kwargs.values()
-        on_progress()
+        (items, username, short_code, is_video, current_post, caption) = kwargs.values()
 
         if is_video:
             url = items.get('video_url')
@@ -25,6 +29,7 @@ class Downloader:
             url = items.get('display_url')
             save_path = self.folder('Images', username, short_code)
             filename = f'{save_path}/{current_post}.jpg'
+            self.save_file(file_path=f'{save_path}/title.txt', content=caption)
         self.download(url, filename, on_progress)
 
     @staticmethod

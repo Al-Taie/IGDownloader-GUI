@@ -1,17 +1,22 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainqqEJxy.ui'
+## Form generated from reading UI file 'main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.0.2
+## Created by: Qt User Interface Compiler version 6.2.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from PySide6.QtWidgets import *
-
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QFrame, QLabel, QProgressBar,
+    QSizePolicy, QToolButton, QWidget)
 import res_rc
 
 class Ui_Form(object):
@@ -22,7 +27,6 @@ class Ui_Form(object):
         Form.setMinimumSize(QSize(320, 220))
         Form.setMaximumSize(QSize(320, 220))
         font = QFont()
-        font.setFamily(u"JetBrains Mono")
         Form.setFont(font)
         Form.setStyleSheet(u"QToolTip {\n"
 "  background-color: #148CD2;\n"
@@ -41,7 +45,6 @@ class Ui_Form(object):
         self.btn_run.setObjectName(u"btn_run")
         self.btn_run.setGeometry(QRect(110, 50, 100, 100))
         font1 = QFont()
-        font1.setFamily(u"JetBrains Mono")
         font1.setBold(True)
         self.btn_run.setFont(font1)
         self.btn_run.setStyleSheet(u"QToolButton {\n"
@@ -70,7 +73,6 @@ class Ui_Form(object):
         self.lbl_dev.setObjectName(u"lbl_dev")
         self.lbl_dev.setGeometry(QRect(-20, 190, 361, 20))
         font2 = QFont()
-        font2.setFamily(u"JetBrains Mono Bold")
         font2.setBold(False)
         font2.setItalic(False)
         font2.setUnderline(True)
@@ -86,7 +88,6 @@ class Ui_Form(object):
         self.btn_exit.setObjectName(u"btn_exit")
         self.btn_exit.setGeometry(QRect(296, 10, 16, 16))
         font3 = QFont()
-        font3.setFamily(u"IBM Plex Sans")
         font3.setBold(False)
         self.btn_exit.setFont(font3)
         self.btn_exit.setStyleSheet(u"\n"
@@ -105,10 +106,7 @@ class Ui_Form(object):
         self.btn_min = QToolButton(self.bg)
         self.btn_min.setObjectName(u"btn_min")
         self.btn_min.setGeometry(QRect(276, 10, 16, 16))
-        font4 = QFont()
-        font4.setFamily(u"IBM Plex Sans")
-        font4.setBold(True)
-        self.btn_min.setFont(font4)
+        self.btn_min.setFont(font1)
         self.btn_min.setStyleSheet(u"QToolButton {\n"
 "border-radius: 8;\n"
 "background-color: rgb(170, 85, 0);\n"
@@ -171,13 +169,12 @@ class Ui_Form(object):
         self.lbl_name = QLabel(self.bg)
         self.lbl_name.setObjectName(u"lbl_name")
         self.lbl_name.setGeometry(QRect(-1, 5, 131, 20))
-        font5 = QFont()
-        font5.setFamily(u"JetBrains Mono Bold")
-        font5.setPointSize(8)
-        font5.setBold(True)
-        font5.setItalic(False)
-        font5.setUnderline(True)
-        self.lbl_name.setFont(font5)
+        font4 = QFont()
+        font4.setPointSize(8)
+        font4.setBold(True)
+        font4.setItalic(False)
+        font4.setUnderline(True)
+        self.lbl_name.setFont(font4)
         self.lbl_name.setStyleSheet(u"color: rgb(78, 86, 102);")
         self.lbl_name.setTextFormat(Qt.AutoText)
         self.lbl_name.setScaledContents(True)
@@ -186,7 +183,7 @@ class Ui_Form(object):
         self.btn_info = QToolButton(self.bg)
         self.btn_info.setObjectName(u"btn_info")
         self.btn_info.setGeometry(QRect(256, 10, 16, 16))
-        self.btn_info.setFont(font4)
+        self.btn_info.setFont(font1)
         self.btn_info.setStyleSheet(u"QToolButton {\n"
 "border-radius: 8;\n"
 "background-color: rgb(0, 85, 127);\n"
@@ -199,7 +196,7 @@ class Ui_Form(object):
         self.btn_folder = QToolButton(self.bg)
         self.btn_folder.setObjectName(u"btn_folder")
         self.btn_folder.setGeometry(QRect(237, 10, 14, 14))
-        self.btn_folder.setFont(font4)
+        self.btn_folder.setFont(font1)
         self.btn_folder.setStyleSheet(u"QToolButton {\n"
 "border-radius: 8;\n"
 "background-color: transparent;\n"
@@ -219,11 +216,10 @@ class Ui_Form(object):
         self.lbl_update = QLabel(self.bg)
         self.lbl_update.setObjectName(u"lbl_update")
         self.lbl_update.setGeometry(QRect(10, 30, 301, 16))
-        font6 = QFont()
-        font6.setFamily(u"JetBrains Mono Bold")
-        font6.setPointSize(8)
-        font6.setBold(True)
-        self.lbl_update.setFont(font6)
+        font5 = QFont()
+        font5.setPointSize(8)
+        font5.setBold(True)
+        self.lbl_update.setFont(font5)
         self.lbl_update.setStyleSheet(u"QLabel {\n"
 "    color: rgb(175, 5, 0);\n"
 "    border-radius: 8;\n"
@@ -236,6 +232,29 @@ class Ui_Form(object):
 "	 background-color: rgb(200, 200, 0);\n"
 "}")
         self.lbl_update.setAlignment(Qt.AlignCenter)
+        self.btn_cookie = QToolButton(self.bg)
+        self.btn_cookie.setObjectName(u"btn_cookie")
+        self.btn_cookie.setGeometry(QRect(210, 7, 20, 20))
+        self.btn_cookie.setFont(font1)
+        self.btn_cookie.setStyleSheet(u"QToolButton {\n"
+"border-radius: 8;\n"
+"background-color: transparent;\n"
+" }\n"
+"\n"
+"QToolButton::hover\n"
+"{\n"
+"	\n"
+"	\n"
+"	\n"
+"	background-color: rgb(0, 0, 0);\n"
+"}")
+        icon1 = QIcon()
+        icon1.addFile(u":/cookie.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.btn_cookie.setIcon(icon1)
+        self.btn_cookie.setCheckable(False)
+        self.btn_cookie.setChecked(False)
+        self.btn_cookie.setPopupMode(QToolButton.DelayedPopup)
+        self.btn_cookie.setToolButtonStyle(Qt.ToolButtonFollowStyle)
 
         self.retranslateUi(Form)
 
@@ -280,5 +299,11 @@ class Ui_Form(object):
         self.lbl_update.setToolTip(QCoreApplication.translate("Form", u"Status", None))
 #endif // QT_CONFIG(tooltip)
         self.lbl_update.setText(QCoreApplication.translate("Form", u"Please don't exit until update completed", None))
+#if QT_CONFIG(tooltip)
+        self.btn_cookie.setToolTip(QCoreApplication.translate("Form", u"Cookies", None))
+#endif // QT_CONFIG(tooltip)
+#if QT_CONFIG(shortcut)
+        self.btn_cookie.setShortcut(QCoreApplication.translate("Form", u"Ctrl+D", None))
+#endif // QT_CONFIG(shortcut)
     # retranslateUi
 

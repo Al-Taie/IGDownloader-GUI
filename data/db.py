@@ -2,11 +2,7 @@ from dataclasses import dataclass
 
 from pymongo import MongoClient, errors as ex
 
-# Creating a pymongo client
-client = MongoClient('MONGO_CLIENT')
-
-db = client['Apps']
-collection = db['app']
+from data.localConfig import MONGO_CLIENT
 
 
 @dataclass
@@ -18,6 +14,10 @@ class Update:
 
 def is_new_update(current_version, *args, **kwargs) -> Update | bool:
     try:
+        client = MongoClient(MONGO_CLIENT)
+
+        db = client['Apps']
+        collection = db['app']
         result = collection.find_one({'name': 'IG Downloader'})
     except ex.ConnectionFailure:
         return False
