@@ -1,24 +1,24 @@
 import re
-import sys
+import traceback
 from os import startfile
+import browser_cookie3
+from PySide6.QtCore import Qt, QThreadPool, QPoint, QSize
+from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtWidgets import QMenu, QSystemTrayIcon, QApplication, QMainWindow, QMessageBox, QInputDialog
 
-import requests
-from PySide6.QtCore import Qt, QThreadPool
-from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QMenu, QSystemTrayIcon, QApplication, QMainWindow, QMessageBox
-
+from data.api_service import ApiService
 from data.db import is_new_update
 from data.downloader import Downloader
 from ui.dialog.about_dialog import AboutDialog
 from ui.main.ui_main import Ui_Form
-from utils.configurations import app_name, PATH_IG_DOWNLOAD, headers, PATH_DOWNLOADS, version
+from utils.configurations import app_name, PATH_IG_DOWNLOAD, HEADERS, PATH_DOWNLOADS, version
 from utils.worker import Worker
 
 
 class MainApp(QMainWindow, Ui_Form):
     def __init__(self):
         super().__init__()
-        self.offset = 0
+        self.offset = QPoint()
         self.about = AboutDialog()
         self.clipboard = QApplication.clipboard()
         self.last_clipboard = list()
@@ -69,6 +69,8 @@ class MainApp(QMainWindow, Ui_Form):
         # HANDLE BUTTONS
         self.handle_buttons()
         self.lbl_update.setVisible(False)
+        self.cookies = ''
+        self.api_service = ApiService(cookie=self.cookies)
 
     # SYSTEM TRAY CLICK EVENT
     def on_tray_activated(self, reason):
@@ -87,12 +89,52 @@ class MainApp(QMainWindow, Ui_Form):
             self.move(event.globalPosition().toPoint() - self.offset)
             event.accept()
 
+    def cookie_dialog(self):
+        msg = QMessageBox(self)
+        msg.setIcon(QMessageBox.Information)
+
+        is_logged = bool(self.cookies)
+        title = 'Logout' if is_logged else 'Login'
+        self.btn_cookie.setToolTip('Login' if is_logged else 'Logout')
+
+        icon = QPixmap()
+
+        if is_logged:
+            icon.load(u":/logout.png")
+        else:
+            icon.load(u":/login.png")
+
+        msg.setIconPixmap(icon.scaled(48, 48, Qt.KeepAspectRatio))
+
+        msg.setText(f"Instagram {title}")
+        msg.setInformativeText(f"Do you want to {title}?")
+        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+
+        if not is_logged:
+            msg.setDetailedText('Please open your browser then login into Instagram, '
+                                'after that clik Ok, '
+                                'if you already logged just click Ok.')
+
+        status = msg.exec() == QMessageBox.Ok
+        icon = QIcon()
+
+        if status and not is_logged:
+            icon.addFile(u":/logout.png", QSize(), QIcon.Normal, QIcon.Off)
+            self.btn_cookie.setIcon(icon)
+            self.cookies = browser_cookie3.load(domain_name='instagram.com')
+            self.api_service.cookie = self.cookies
+        elif status and is_logged:
+            icon.addFile(u":/login.png", QSize(), QIcon.Normal, QIcon.Off)
+            self.btn_cookie.setIcon(icon)
+            self.cookies = {}
+            self.api_service.cookie = self.cookies
+
     def handle_buttons(self):
         self.btn_run.clicked.connect(self.run_btn)
         self.btn_min.clicked.connect(self.hide)
         self.btn_exit.clicked.connect(self.close)
         self.btn_folder.clicked.connect(self.open_folder)
-        self.btn_cookie.clicked.connect(self.close)
+        self.btn_cookie.clicked.connect(self.cookie_dialog)
         self.btn_info.clicked.connect(self.show_about)
         self.clipboard.dataChanged.connect(self.detect_url)
 
@@ -140,46 +182,21 @@ class MainApp(QMainWindow, Ui_Form):
             self.handle_progress(total_size, current_size)
 
         try:
-            with requests.get(url, headers=headers) as resp:
-                res_json = resp.json()
-                items = res_json.get('graphql').get('shortcode_media')
-                is_video = items.get('is_video')
-                is_slide = items.get('edge_sidecar_to_children')
-                caption: str = (
-                    items
-                    .get('edge_media_to_caption')
-                    .get('edges')[0]
-                    .get('node')
-                    .get('text')
-                ).split('\n')[0]
+            post = self.api_service.get_post(url=url, headers=HEADERS)
 
-                short_code = items["shortcode"]
-                username = items['owner']['username']
-
-            if is_slide:
-                post_list: list = items.get('edge_sidecar_to_children').get('edges')
-                post_count = len(post_list)
-
-                for current_post, post in enumerate(post_list, start=1):
-                    items = post['node']
-                    is_video = items.get('is_video')
-                    self.lbl_count.setText(f'{post_count}/{current_post}')
-                    self.__downloader.download_prepare(items=items,
-                                                       username=username,
-                                                       short_code=short_code,
-                                                       is_video=is_video,
-                                                       current_post=current_post,
+            if post.is_slide:
+                for index, media_item in enumerate(post.items, start=1):
+                    self.lbl_count.setText(f'{post.count}/{index}')
+                    self.__downloader.download_prepare(media_item=media_item,
+                                                       index=index,
                                                        on_progress=on_progress,
-                                                       caption=caption)
+                                                       post=post)
             else:
-                self.__downloader.download_prepare(items=items,
-                                                   username=username,
-                                                   short_code=short_code,
-                                                   is_video=is_video,
+                self.__downloader.download_prepare(media_item=post.item,
                                                    on_progress=on_progress,
-                                                   caption=caption)
+                                                   post=post)
         except Exception as e:
-            print(e)
+            traceback.print_exception(e.__traceback__)
             self.lbl_status.setText('Error')
         else:
             self.lbl_status.setText('OK')

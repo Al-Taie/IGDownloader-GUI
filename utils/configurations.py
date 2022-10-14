@@ -1,7 +1,7 @@
 from os import getlogin
 
 
-headers = {'authority': 'www.instagram.com',
+HEADERS = {'authority': 'www.instagram.com',
            'method': 'GET',
            'scheme': 'https',
            'accept': ('text/html,application/xhtml+xml,application/xml;q=0.9,'

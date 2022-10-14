@@ -3,6 +3,7 @@
     <file>folder.png</file>
     <file>icon.png</file>
     <file>profile.jpg</file>
-    <file>cookie.png</file>
+    <file>login.png</file>
+    <file>logout.png</file>
   </qresource>
 </RCC>

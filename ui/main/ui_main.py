@@ -234,7 +234,7 @@ class Ui_Form(object):
         self.lbl_update.setAlignment(Qt.AlignCenter)
         self.btn_cookie = QToolButton(self.bg)
         self.btn_cookie.setObjectName(u"btn_cookie")
-        self.btn_cookie.setGeometry(QRect(210, 7, 20, 20))
+        self.btn_cookie.setGeometry(QRect(212, 7, 20, 20))
         self.btn_cookie.setFont(font1)
         self.btn_cookie.setStyleSheet(u"QToolButton {\n"
 "border-radius: 8;\n"
@@ -244,13 +244,12 @@ class Ui_Form(object):
 "QToolButton::hover\n"
 "{\n"
 "	\n"
-"	\n"
-"	\n"
-"	background-color: rgb(0, 0, 0);\n"
+"\n"
 "}")
         icon1 = QIcon()
-        icon1.addFile(u":/cookie.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon1.addFile(u":/login.png", QSize(), QIcon.Normal, QIcon.Off)
         self.btn_cookie.setIcon(icon1)
+        self.btn_cookie.setIconSize(QSize(17, 17))
         self.btn_cookie.setCheckable(False)
         self.btn_cookie.setChecked(False)
         self.btn_cookie.setPopupMode(QToolButton.DelayedPopup)
@@ -300,7 +299,7 @@ class Ui_Form(object):
 #endif // QT_CONFIG(tooltip)
         self.lbl_update.setText(QCoreApplication.translate("Form", u"Please don't exit until update completed", None))
 #if QT_CONFIG(tooltip)
-        self.btn_cookie.setToolTip(QCoreApplication.translate("Form", u"Cookies", None))
+        self.btn_cookie.setToolTip(QCoreApplication.translate("Form", u"Login", None))
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(shortcut)
         self.btn_cookie.setShortcut(QCoreApplication.translate("Form", u"Ctrl+D", None))

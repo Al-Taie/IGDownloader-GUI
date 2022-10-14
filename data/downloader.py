@@ -1,7 +1,9 @@
-from os import path, mkdir, makedirs
+from os import makedirs
 
 import requests
 
+from data.models.media import Media
+from data.models.post import Post
 from utils.configurations import PATH_IG_DOWNLOAD
 
 
@@ -15,22 +17,21 @@ class Downloader:
 
     @staticmethod
     def save_file(file_path, content):
-        with open(file_path, 'w+') as wf:
+        with open(file_path, 'w+', encoding='utf-8') as wf:
             wf.write(content)
 
-    def download_prepare(self, on_progress, *args, **kwargs):
-        (items, username, short_code, is_video, current_post, caption) = kwargs.values()
-
-        if is_video:
-            url = items.get('video_url')
-            save_path = self.folder('Videos', username, short_code)
-            filename = f'{save_path}/{current_post}.mp4'
+    def download_prepare(self, on_progress, media_item: Media, post: Post, index=1, *args, **kwargs):
+        if media_item.is_video:
+            save_path = self.folder('Videos', post.username, post.short_code)
+            filename = f'{save_path}/{index}.mp4'
+            if post.caption:
+                self.save_file(file_path=f'{save_path}/title.txt', content=post.caption)
         else:
-            url = items.get('display_url')
-            save_path = self.folder('Images', username, short_code)
-            filename = f'{save_path}/{current_post}.jpg'
-            self.save_file(file_path=f'{save_path}/title.txt', content=caption)
-        self.download(url, filename, on_progress)
+            save_path = self.folder('Images', post.username, post.short_code)
+            filename = f'{save_path}/{index}.jpg'
+            if post.caption:
+                self.save_file(file_path=f'{save_path}/title.txt', content=post.caption)
+        self.download(media_item.url, filename, on_progress)
 
     @staticmethod
     def download(url, filename, on_progress, headers=None, *args, **kwargs):
